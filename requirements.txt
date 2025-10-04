@@ -1,0 +1,5 @@
+aiogram
+aiohttp
+imagehash
+pillow
+python-dotenv
