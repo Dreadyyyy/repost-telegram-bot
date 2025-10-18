@@ -30,7 +30,7 @@ conn.commit()
 async def download_file(file_id, filename):
     file = await bot.get_file(file_id)
     url = f"https://api.telegram.org/file/bot{API_TOKEN}/{file.file_path}"
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(proxy=http_proxy) as session:
         async with session.get(url) as resp:
             data = await resp.read()
             with open(filename, "wb") as f:
