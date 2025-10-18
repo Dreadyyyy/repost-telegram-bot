@@ -2,6 +2,7 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import Command
+from aiogram.client.session.aiohttp import AiohttpSession 
 from PIL import Image
 import imagehash
 import sqlite3
@@ -12,9 +13,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_TOKEN = os.getenv("API_TOKEN")
+http_proxy = os.getenv("http_proxy")
+
+session = AiohttpSession(proxy=http_proxy)
+
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=API_TOKEN)
+bot = Bot(token=API_TOKEN, session=session)
 dp = Dispatcher()
 
 conn = sqlite3.connect("hashes.db")
@@ -25,7 +30,7 @@ conn.commit()
 async def download_file(file_id, filename):
     file = await bot.get_file(file_id)
     url = f"https://api.telegram.org/file/bot{API_TOKEN}/{file.file_path}"
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(proxy=http_proxy) as session:
         async with session.get(url) as resp:
             data = await resp.read()
             with open(filename, "wb") as f:
